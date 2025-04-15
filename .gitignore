@@ -1,12 +1,2 @@
-fma_metadata/features.csv
-fma_metadata/checksums
-fma_metadata/echonest.csv
-fma_metadata/genres.csv
-fma_metadata/not_found.pickle
-fma_metadata/raw_albums.csv
-fma_metadata/raw_artists.csv
-fma_metadata/raw_echonest.csv
-fma_metadata/raw_genres.csv
-fma_metadata/raw_tracks.csv
-fma_metadata/README.txt
-fma_metadata/tracks.csv
+data/*
+fma_metadata/*

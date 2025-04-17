@@ -1,4 +1,15 @@
 #!/bin/bash
+loading_spinner () {
+    local spin="-\|/"
+    local i=0
+    
+    while kill -0 $1 2>/dev/null
+    do
+        i=$(( (i+1) % 4 ))
+        printf "\r${spin:$i:1}"
+        sleep 0.5
+    done
+}
 
 if ! [ -d "data" ]; then
     echo -e "Data directory not found. Generating new data directory...\n"
@@ -18,17 +29,7 @@ else
 fi
 
 unzip -o -q fma_metadata.zip &
-pid=$!
-
-spin="-\|/"
-
-i=0
-while kill -0 $pid 2>/dev/null
-do
-    i=$(( (i+1) %4 ))
-    printf "\r${spin:$i:1}"
-    sleep 0.5
-done
+loading_spinner $!
 
 rm -f fma_metadata.zip
 

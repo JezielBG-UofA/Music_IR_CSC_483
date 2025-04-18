@@ -29,6 +29,29 @@ HOW TO USE:
     IT WILL CREATE A NEW CSV FILE CALLED trackData.csv IN THE fma_metadata FOLDER
 
     LET ME KNOW IF I NEED TO ADD MORE INFORMATION TO THE CSV FILE
+    
+    
+The CSV file generated will be listed here by:
+    0. track-id
+    1. album-favorites
+    2. album-listens
+    3. album-producer
+    4. album-tag
+    5. album-title
+    6. album-tracks
+    7. artist-favorites
+    8. artist-id
+    9. artist-members
+    10. artist-name
+    11. artist-tags
+    12. track-composer
+    13. track-favorites
+    14. track-genre_top
+    15. track-genres (# of genres)
+    16. track-genres-all
+    17. track-interest
+    18. track-listens
+    19. track-title
 """
 
 import csv

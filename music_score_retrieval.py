@@ -18,6 +18,13 @@ class IRSystem:
         pass
 
 
+    def run_query(self, title, artist, members, genre):
+        return self._run_query(title.lower().split(), artist.lower().split(), members.lower().split(), genre.lower().split())
+    
+    def _run_query(self, title, artist, members, genre):
+        pass
+
+
 
 
 

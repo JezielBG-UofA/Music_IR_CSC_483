@@ -11,18 +11,59 @@ Instructions:
 
 
 '''
+import csv
 
 class IRSystem:
 
     def __init__(self, file):
-        pass
+        title_tf = {}
+        artist_tf = {}
+        members_tf = {}
+        genre_tf = {}
+
+        
+        with open(file, "r") as data_set:
+            reader = csv.reader(data_set, quotechar="\"")
+            row = 1
+            for row in reader:
+                title = row[52]
+                artist = row[26]
+                members = row[25]
+                genres = row[42]
+                track_id = row[0]
+
+                # begin tf for title
+                title_tokens = title.lower().split()
+                title_tf[track_id] = {}
+
+                for term in title_tokens:
+                    
+
+
+                # begin tf for artist
+
+
+                # begin tf for members
+
+
+                # genres
+
+
+
 
 
     def run_query(self, title, artist, members, genre):
         return self._run_query(title.lower().split(), artist.lower().split(), members.lower().split(), genre.lower().split())
     
     def _run_query(self, title, artist, members, genre):
-        pass
+        '''
+        
+        
+        '''
+        results = []
+
+
+
 
 
 

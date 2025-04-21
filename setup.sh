@@ -7,17 +7,11 @@ loading_spinner () {
     do
         i=$(( (i+1) % 4 ))
         printf "\r${spin:$i:1}"
-        sleep 0.5
+        sleep 0.2
     done
 }
 
-if ! [ -d "data" ]; then
-    echo -e "Data directory not found. Generating new data directory...\n"
-    mkdir data
-fi
-
 echo -e "Downloading metadata..."
-cd data
 curl -O https://os.unil.cloud.switch.ch/fma/fma_metadata.zip
 OUTPUT=`echo "f0df49ffe5f2a6008d7dc83c6915b31835dfe733  fma_metadata.zip" | sha1sum -c -`
 
@@ -33,6 +27,9 @@ loading_spinner $!
 
 rm -f fma_metadata.zip
 
-cd ..
+echo -e "\bFinished install. Parsing file information."
+
+python -I makeCSV.py &
+loading_spinner $!
 
 echo -e "\bFinished setup. Exitting."

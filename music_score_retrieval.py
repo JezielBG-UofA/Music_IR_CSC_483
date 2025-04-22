@@ -12,12 +12,17 @@ Instructions:
 
 '''
 import csv
+import math
 
 class IRSystem:
 
     def __init__(self, file):
         title_tf = {}
+        self.title_df = {}
+        self.normalized_title_weights ={}
         artist_tf = {}
+        self.artist_df = {}
+        self.normalized_artist_weights = {}
         members_tf = {}
         genre_tf = {}
 
@@ -37,21 +42,80 @@ class IRSystem:
                 title_tf[track_id] = {}
 
                 for term in title_tokens:
-                    pass
-
-
+                    if term not in title_tf[track_id]:
+                        title_tf[track_id][term] = 1
+                    else:
+                        title_tf[track_id][term] += 1
 
                 # begin tf for artist
                 artist_tokens = artist.lower().split()
                 artist_tf[track_id] = {}
 
+                for term in artist_tokens:
+                    if term not in artist_tf[track_id]:
+                        artist_tf[track_id][term] = 1
+                    else:
+                        artist_tf[track_id][term] += 1
+                
 
                 # begin tf for members
 
-
                 # genres
+        
+        self._calc_title_vals(title_tf)
+        self._calc_artist_vals(artist_tf)
 
 
+
+    def _calc_title_vals(self, title_tf): 
+        # calcing doc frequency for titles
+        for track in title_tf:
+            for term in title_tf[track]:
+                if term in self.title_df:
+                    self.title_df[term] +=1
+                else:
+                    self.title_df[term] = 1
+        
+        title_weights = {} # not normalized
+
+        for track in title_tf:
+            title_weights[track] = {}
+
+            for term in title_tf[track]:
+                title_weights[track][term] = (1+math.log10(title_tf[track][term]))
+
+        # calcing normalized weights
+        for track in title_weights:
+            self.normalized_title_weights[track] = {}
+            square_frequency = [x*x for x in list(title_weights[track].values())]
+            for term in title_weights[track]:
+                cosine = 1/math.sqrt(sum(square_frequency))
+                self.normalized_title_weights[track][term] = title_weights[track][term] * cosine
+
+    def _calc_artist_vals(self, artist_tf):
+        # calcing doc freq for artists
+        for track in artist_tf:
+            for term in artist_tf[track]:
+                if term in self.artist_df:
+                    self.artist_df[term] +=1
+                else:
+                    self.artist_df[term] = 1
+        
+        artist_weights = {} # not normalized
+
+        for track in artist_tf:
+            artist_weights[track] = {}
+
+            for term in artist_tf[track]:
+                artist_weights[track][term] = (1+math.log10(artist_tf[track][term]))
+
+        # calcing normalized weights
+        for track in artist_weights:
+            self.normalized_artist_weights[track] = {}
+            square_frequency = [x*x for x in list(artist_weights[track].values())]
+            for term in artist_weights[track]:
+                cosine = 1/math.sqrt(sum(square_frequency))
+                self.normalized_artist_weights[track][term] = artist_weights[track][term] * cosine
 
 
 

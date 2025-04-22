@@ -37,10 +37,13 @@ class IRSystem:
                 title_tf[track_id] = {}
 
                 for term in title_tokens:
-                    
+                    pass
+
 
 
                 # begin tf for artist
+                artist_tokens = artist.lower().split()
+                artist_tf[track_id] = {}
 
 
                 # begin tf for members

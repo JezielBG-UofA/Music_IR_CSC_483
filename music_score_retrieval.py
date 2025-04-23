@@ -1,7 +1,7 @@
 '''
 Authors: 
     Jeziel Banos Gonzalez
-    []
+    Nathan Mette
     []
     []
 
@@ -23,9 +23,9 @@ class IRSystem:
         artist_tf = {}
         self.artist_df = {}
         self.normalized_artist_weights = {}
-        members_tf = {}
         genre_tf = {}
 
+        self.tracks = {}
         
         with open(file, "r") as data_set:
             reader = csv.reader(data_set, quotechar="\"")
@@ -36,6 +36,9 @@ class IRSystem:
                 members = row[25]
                 genres = row[42]
                 track_id = row[0]
+
+                # Add track to dict of all tracks
+                self.tracks[track_id] = title
 
                 # begin tf for title
                 title_tokens = title.lower().split()
@@ -118,15 +121,75 @@ class IRSystem:
                 self.normalized_artist_weights[track][term] = artist_weights[track][term] * cosine
 
 
+    # Calculates the ltn of the inputted content alongside the df of the provided set.
+    def _calc_ltn(self, inputContent: list[str], df: dict[str, int]) -> dict[str, float]:
+        # Calc tf of input.
+        query_tf = {}
+        for term in inputContent:
+            query_tf[term] = query_tf.get(term, default=0) + 1
 
-    def run_query(self, title, artist, members, genre):
-        return self._run_query(title.lower().split(), artist.lower().split(), members.lower().split(), genre.lower().split())
+        terms = query_tf.keys()
+        
+        # Calc l of input.
+        query_l = {}
+        for term in terms:
+            query_l[term] = 1 + math.log10(query_tf[term])
+
+        # Calc t of input.
+        query_t = {}
+        for term in terms:
+            query_t[term] = math.log10(len(self.tracks.keys()) / df[term])
+
+        # Combine and return.
+        retVal = {}
+        for term in terms:
+            retVal[term] = query_l[term] * query_t[term]
+        return retVal
+
+
+
+    def run_query(self, title: str, artist: str, genre: str):
+        return self._run_query(title.lower().split(), artist.lower().split(), genre.lower().split())
     
-    def _run_query(self, title, artist, members, genre):
+    def _run_query(self, title: list[str], artist: list[str], genre: list[str]):
         '''
         
         
         '''
+        # Calc title_tfidf query weighting
+        title_tfidf = {}
+        if len(title) != 0:
+            title_tfidf = self._calc_ltn(title, self.title_df)
+        
+        # Calc artist tf_idf query weighting
+        artist_tfidf = {}
+        if len(artist) != 0:
+            artist_tfidf = self._calc_ltn(artist, self.title_df)
+
+        # Can be uncommented once album document calculation complete.
+        # Calc albumn tf_idf query weighting
+        #album_tfidf = {}
+        #if len(album) != 0:
+        #    album_tfidf = self._calc_ltn(album, self.albumn_df)
+
+        # Add tf_idf weights together
+        track_relevance = {}
+        title_importance = 3
+        artist_importance = 2
+        #album_importance = 1
+        for track_id in self.tracks.keys():
+            for term in title_tfidf.keys():
+                track_relevance[track_id] = track_relevance.get(track_id, default=0) + title_importance * title_tfidf[term] * self.normalized_title_weights[track_id].get(term, default=0)
+            for term in artist_tfidf.keys():
+                track_relevance[track_id] = track_relevance.get(track_id, default=0) + artist_importance * artist_tfidf[term] * self.normalized_artist_weights[track_id].get(term, default=0)
+            #for term in album_tfidf.keys():
+            #    track_relevance[track_id] = track_relevance.get(track_id, default=0) + album_importance * album_tfidf[term] * self.normalized_album_weights[track_id].get(term, default=0)
+
+        # Find tracks that can be returned. Any that appear here should be returned before those not in the dictionary.
+        possible = {}
+        if len(genre) != 0:
+            pass # dependent on how genre is stored
+
         results = []
 
 
@@ -147,10 +210,9 @@ def main(music_collection):
             break
         title = input("Please provide a title. If no title is desired, simply press ENTER on your keyboard.")
         artist = input("Please provide an artist. If no specific artist is desired, simply press ENTER on your keyboard.")
-        members = input("Please provide any members you are interested in, else press ENTER on your keyboard.")
         genre = input("Please provide a desired genre. Else press ENTER on your keyboard")
 
-        print(ir.run_query(title, artist, members, genre))
+        print(ir.run_query(title, artist, genre))
 
 
 

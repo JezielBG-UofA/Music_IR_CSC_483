@@ -20,9 +20,16 @@ class IRSystem:
         title_tf = {}
         self.title_df = {}
         self.normalized_title_weights ={}
+
         artist_tf = {}
         self.artist_df = {}
         self.normalized_artist_weights = {}
+
+        album_tf = {}
+        self.album_df = {}
+        self.normalized_album_weights = {}
+
+
         genre_tf = {}
 
         self.tracks = {}
@@ -33,9 +40,9 @@ class IRSystem:
             for row in reader:
                 title = row[52]
                 artist = row[26]
-                members = row[25]
                 genres = row[42]
                 track_id = row[0]
+                album_title = row[11]
 
                 # Add track to dict of all tracks
                 self.tracks[track_id] = title
@@ -61,65 +68,68 @@ class IRSystem:
                         artist_tf[track_id][term] += 1
                 
 
-                # begin tf for members
+                # begin tf for album title
+                album_tokens = album_title.lower().split()
+                album_tf[track_id] = {}
+
+                for term in album_tokens:
+                    if term not in album_tf[track_id]:
+                        album_tf[track_id][term] = 1
+                    else:
+                        album_tf[track_id][term] += 1
+                
 
                 # genres
         
-        self._calc_title_vals(title_tf)
-        self._calc_artist_vals(artist_tf)
+        self._calc_df_and_weights("title", title_tf)
+        self._calc_df_and_weights("artist",artist_tf)
+        self._calc_df_and_weights("album", album_tf)
+
+    def _calc_df_and_weights(self, attribure_string, attributr_tf):
+
+        df = None
+        normalized_weights = None
+
+        match attribure_string:
+
+            case "album":
+                df = self.album_df
+                normalized_weights = self.normalized_album_weights
 
 
+            case "artist":
+                df = self.artist_df
+                normalized_weights = self.normalized_artist_weights
 
-    def _calc_title_vals(self, title_tf): 
-        # calcing doc frequency for titles
-        for track in title_tf:
-            for term in title_tf[track]:
-                if term in self.title_df:
-                    self.title_df[term] +=1
+            case "title":
+                df = self.title_df
+                normalized_weights = self.normalized_title_weights
+            
+        for track in attributr_tf:
+
+            for term in attributr_tf[track]:
+                if term in df:
+                    df[term] +=1
                 else:
-                    self.title_df[term] = 1
+                    df[term] = 1
         
-        title_weights = {} # not normalized
+        raw_weights = {}
 
-        for track in title_tf:
-            title_weights[track] = {}
+        for track in attributr_tf:
+            raw_weights[track] = {}
 
-            for term in title_tf[track]:
-                title_weights[track][term] = (1+math.log10(title_tf[track][term]))
+            for term in attributr_tf[track]:
+                raw_weights[track][term] = (1+math.log10(attributr_tf[track][term]))
+
 
         # calcing normalized weights
-        for track in title_weights:
-            self.normalized_title_weights[track] = {}
-            square_frequency = [x*x for x in list(title_weights[track].values())]
-            for term in title_weights[track]:
+        for track in raw_weights:
+            normalized_weights[track] = {}
+            square_frequency = [x*x for x in list(raw_weights[track].values())]
+            for term in raw_weights[track]:
                 cosine = 1/math.sqrt(sum(square_frequency))
-                self.normalized_title_weights[track][term] = title_weights[track][term] * cosine
-
-    def _calc_artist_vals(self, artist_tf):
-        # calcing doc freq for artists
-        for track in artist_tf:
-            for term in artist_tf[track]:
-                if term in self.artist_df:
-                    self.artist_df[term] +=1
-                else:
-                    self.artist_df[term] = 1
-        
-        artist_weights = {} # not normalized
-
-        for track in artist_tf:
-            artist_weights[track] = {}
-
-            for term in artist_tf[track]:
-                artist_weights[track][term] = (1+math.log10(artist_tf[track][term]))
-
-        # calcing normalized weights
-        for track in artist_weights:
-            self.normalized_artist_weights[track] = {}
-            square_frequency = [x*x for x in list(artist_weights[track].values())]
-            for term in artist_weights[track]:
-                cosine = 1/math.sqrt(sum(square_frequency))
-                self.normalized_artist_weights[track][term] = artist_weights[track][term] * cosine
-
+                normalized_weights[track][term] = raw_weights[track][term] * cosine
+            
 
     # Calculates the ltn of the inputted content alongside the df of the provided set.
     def _calc_ltn(self, inputContent: list[str], df: dict[str, int]) -> dict[str, float]:

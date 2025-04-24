@@ -43,20 +43,20 @@ class IRSystem:
 
         genre_tf = {}
 
-        self.tracks = {} #<-- Nathan Mette's do not touch
+        self.tracks = {} #<-- Nathan Mette's do not touch : {track id: (title, artist name, album name, pop score)}
         
         with open(file, "r") as data_set:
             reader = csv.reader(data_set, quotechar="\"")
             row = 1
             for row in reader:
-                title = row[52]
-                artist = row[26]
-                genres = row[42]
+                title = row[19]
+                artist = row[10]
+                genres = row[16]
                 track_id = row[0]
-                album_title = row[11]
+                album_title = row[5]
 
                 # Add track to dict of all tracks
-                self.tracks[track_id] = title
+                self.tracks[track_id] = (title, artist, album_title, row[18])
 
                 # begin tf for title
                 title_tokens = title.lower().split()
@@ -218,6 +218,9 @@ class IRSystem:
                 track_relevance[track_id] = track_relevance.get(track_id, default=0) + artist_importance * artist_tfidf[term] * self.normalized_artist_weights[track_id].get(term, default=0)
             #for term in album_tfidf.keys():
             #    track_relevance[track_id] = track_relevance.get(track_id, default=0) + album_importance * album_tfidf[term] * self.normalized_album_weights[track_id].get(term, default=0)
+
+            # added by Jeziel Banos Gonzalez (just adding popularity score for ties handling)
+            track_relevance[track_id] = track_relevance.get(track_id, default=0) + (0.0000005 * self.tracks[track_id][3]) 
 
         # Find tracks that can be returned. Any that appear here should be returned before those not in the dictionary.
         possible = {}

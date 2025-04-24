@@ -182,10 +182,10 @@ class IRSystem:
 
 
 
-    def run_query(self, title: str, artist: str, genre: str):
-        return self._run_query(title.lower().split(), artist.lower().split(), genre.lower().split())
+    def run_query(self, title: str, artist: str, genre: str, album: str):
+        return self._run_query(title.lower().split(), artist.lower().split(), genre.lower().split(), album.lower().split())
     
-    def _run_query(self, title: list[str], artist: list[str], genre: list[str]):
+    def _run_query(self, title: list[str], artist: list[str], genre: list[str], album: list[str]):
         '''
         
         
@@ -200,24 +200,23 @@ class IRSystem:
         if len(artist) != 0:
             artist_tfidf = self._calc_ltn(artist, self.title_df)
 
-        # Can be uncommented once album document calculation complete.
         # Calc albumn tf_idf query weighting
-        #album_tfidf = {}
-        #if len(album) != 0:
-        #    album_tfidf = self._calc_ltn(album, self.albumn_df)
+        album_tfidf = {}
+        if len(album) != 0:
+            album_tfidf = self._calc_ltn(album, self.albumn_df)
 
         # Add tf_idf weights together
         track_relevance = {}
         title_importance = 3
         artist_importance = 2
-        #album_importance = 1
+        album_importance = 1
         for track_id in self.tracks.keys():
             for term in title_tfidf.keys():
                 track_relevance[track_id] = track_relevance.get(track_id, default=0) + title_importance * title_tfidf[term] * self.normalized_title_weights[track_id].get(term, default=0)
             for term in artist_tfidf.keys():
                 track_relevance[track_id] = track_relevance.get(track_id, default=0) + artist_importance * artist_tfidf[term] * self.normalized_artist_weights[track_id].get(term, default=0)
-            #for term in album_tfidf.keys():
-            #    track_relevance[track_id] = track_relevance.get(track_id, default=0) + album_importance * album_tfidf[term] * self.normalized_album_weights[track_id].get(term, default=0)
+            for term in album_tfidf.keys():
+                track_relevance[track_id] = track_relevance.get(track_id, default=0) + album_importance * album_tfidf[term] * self.normalized_album_weights[track_id].get(term, default=0)
 
             # added by Jeziel Banos Gonzalez (just adding popularity score for ties handling)
             track_relevance[track_id] = track_relevance.get(track_id, default=0) + (0.0000005 * self.tracks[track_id][3]) 

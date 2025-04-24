@@ -17,6 +17,17 @@ import math
 class IRSystem:
 
     def __init__(self, file):
+        '''
+        Authors: Jeziel Banos Gonzalez (main), Nathan Mette
+        Args: 
+            self - self
+            file - the csv file which we will be reading the track from
+
+        Purpose: sets up all the term frequencys for different track attributes
+                 which will be needed to calculate doc frequency and normalized
+                 weights for scoring tracks
+            
+        '''
         title_tf = {}
         self.title_df = {}
         self.normalized_title_weights ={}
@@ -32,7 +43,7 @@ class IRSystem:
 
         genre_tf = {}
 
-        self.tracks = {}
+        self.tracks = {} #<-- Nathan Mette's do not touch
         
         with open(file, "r") as data_set:
             reader = csv.reader(data_set, quotechar="\"")
@@ -85,13 +96,25 @@ class IRSystem:
         self._calc_df_and_weights("artist",artist_tf)
         self._calc_df_and_weights("album", album_tf)
 
-    def _calc_df_and_weights(self, attribure_string, attributr_tf):
-
+    def _calc_df_and_weights(self, attribure_string, attribute_tf):
+        '''
+        Author: Jeziel Banos Gonzalez
+        Args:
+            self - self
+            attribute_string - a string describing what attribute of a track we
+                               are attempting to calc the df and norm'd weights for
+            attribute_tf -  a dictionary in form {track_id: {term: frequency}} which
+                            stores the frequency of each term for each track for a 
+                            specified attribute
+        
+        Purpose: This method calculates the doc frequency and normalized weights for
+                 each term for a track's attribute [album title, track title, artist name]
+        '''
         df = None
         normalized_weights = None
 
+        # determine the attribute we are calcing for
         match attribure_string:
-
             case "album":
                 df = self.album_df
                 normalized_weights = self.normalized_album_weights
@@ -105,9 +128,9 @@ class IRSystem:
                 df = self.title_df
                 normalized_weights = self.normalized_title_weights
             
-        for track in attributr_tf:
+        for track in attribute_tf:
 
-            for term in attributr_tf[track]:
+            for term in attribute_tf[track]:
                 if term in df:
                     df[term] +=1
                 else:
@@ -115,11 +138,12 @@ class IRSystem:
         
         raw_weights = {}
 
-        for track in attributr_tf:
+        # calcing raw weights before normalization
+        for track in attribute_tf:
             raw_weights[track] = {}
 
-            for term in attributr_tf[track]:
-                raw_weights[track][term] = (1+math.log10(attributr_tf[track][term]))
+            for term in attribute_tf[track]:
+                raw_weights[track][term] = (1+math.log10(attribute_tf[track][term]))
 
 
         # calcing normalized weights

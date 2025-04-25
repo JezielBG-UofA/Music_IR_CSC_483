@@ -45,7 +45,7 @@ class IRSystem:
 
         self.tracks = {} #<-- Nathan Mette's do not touch : {track id: (title, artist name, album name, pop score)}
         
-        with open(file, "r") as data_set:
+        with open(file, "r", encoding="utf-8") as data_set:
             reader = csv.reader(data_set, quotechar="\"")
             row = 1
             for row in reader:
@@ -251,4 +251,4 @@ def main(music_collection):
         print(ir.run_query(title, artist, genre))
 
 
-
+main("./fma_metadata/trackData.csv")

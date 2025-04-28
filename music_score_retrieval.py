@@ -157,38 +157,61 @@ class IRSystem:
 
     # Calculates the ltn of the inputted content alongside the df of the provided set.
     def _calc_ltn(self, inputContent: list[str], df: dict[str, int]) -> dict[str, float]:
+        '''
+        Authors: Nathan Mette (main)
+        Args:
+            self - self
+            inputContent - A list of all tokens in the input.
+            df - A dictionary containting a [str, int] pairing where the keys are the relevant
+                 term and the values are the document frequency related to that term.
+
+        Purpose: Calculates the ltn of the entered list of tokens.
+        '''
         # Calc tf of input.
         query_tf = {}
         for term in inputContent:
             query_tf[term] = query_tf.get(term, default=0) + 1
-
-        terms = query_tf.keys()
         
-        # Calc l of input.
-        query_l = {}
-        for term in terms:
-            query_l[term] = 1 + math.log10(query_tf[term])
-
-        # Calc t of input.
-        query_t = {}
-        for term in terms:
-            query_t[term] = math.log10(len(self.tracks.keys()) / df[term])
-
-        # Combine and return.
         retVal = {}
-        for term in terms:
-            retVal[term] = query_l[term] * query_t[term]
+        for term in query_tf.keys():
+            # Calc l of input.
+            query_l = 1 + math.log10(query_tf[term])
+            # Calc t of input.
+            query_t = math.log10(len(self.tracks.keys()) / df[term])
+            # Combine
+            retVal[term] = query_l * query_t
+        
         return retVal
 
 
 
-    def run_query(self, title: str, artist: str, genre: str, album: str):
-        return self._run_query(title.lower().split(), artist.lower().split(), genre.lower().split(), album.lower().split())
-    
-    def _run_query(self, title: list[str], artist: list[str], genre: list[str], album: list[str]):
+    def run_query(self, title: str, artist: str, album: str, genre: str):
         '''
-        
-        
+        Authors: Jeziel Banos Gonzalez (main)
+        Args: 
+            self - self
+            title - The user input related to the title query.
+            artist - The user input related to the artist query.
+            album - The user input related to the album query.
+            genre - The user input related to the genre query.
+
+        Purpose: Normalizes user input and passes it to a helper function to determine query results.
+        '''
+        return self._run_query(title.lower().split(), artist.lower().split(), album.lower().split(), genre.lower().split())
+    
+    def _run_query(self, title: list[str], artist: list[str], album: list[str], genre: list[str]):
+        '''
+        Authors: Nathan Mette (main), Jeziel Banos Gonzales
+        Args: 
+            self - self
+            title - A list of tokens inputted by the user corresponding to the title information.
+            artist - A list of tokens inputted by the user corresponding to the artist information.
+            album - A list of tokens inputted by the user corresponding to the album information.
+            genre - A list of tokens inputted by the user corresponding to the genre information.
+
+        Purpose: Calculates the tf_idf weighting of every input the user provided and returns a list
+                 of all documents related to the query sorted in descending order based on weight.
+                 Title, Artist, and Album are all weighted calculations. Genre is a boolean calculation (assuming we keep this).
         '''
         # Calc title_tfidf query weighting
         title_tfidf = {}
@@ -200,7 +223,7 @@ class IRSystem:
         if len(artist) != 0:
             artist_tfidf = self._calc_ltn(artist, self.title_df)
 
-        # Calc albumn tf_idf query weighting
+        # Calc album tf_idf query weighting
         album_tfidf = {}
         if len(album) != 0:
             album_tfidf = self._calc_ltn(album, self.albumn_df)

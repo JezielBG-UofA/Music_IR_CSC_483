@@ -12,7 +12,8 @@ loading_spinner () {
 }
 
 echo -e "Downloading metadata..."
-curl -O https://os.unil.cloud.switch.ch/fma/fma_metadata.zip
+# URL is safe. I've verified myself. -- Nathan
+curl -k -O https://os.unil.cloud.switch.ch/fma/fma_metadata.zip
 OUTPUT=`echo "f0df49ffe5f2a6008d7dc83c6915b31835dfe733  fma_metadata.zip" | sha1sum -c -`
 
 if [ "$OUTPUT" == "fma_metadata.zip: OK" ]; then

@@ -203,7 +203,7 @@ class IRSystem:
 
 
 
-    def run_query(self, title: str, artist: str, album: str, genre: str) -> list:
+    def run_query(self, title: str, artist: str, album: str, genre: str, count: int =10) -> list:
         '''
         Authors: Jeziel Banos Gonzalez (main)
         Args: 
@@ -212,12 +212,13 @@ class IRSystem:
             artist - The user input related to the artist query.
             album - The user input related to the album query.
             genre - The user input related to the genre query.
+            count - The number of relevant tracks to return.
 
         Purpose: Normalizes user input and passes it to a helper function to determine query results.
         '''
-        return self._run_query(title.lower().split(), artist.lower().split(), album.lower().split(), genre.lower().split())
+        return self._run_query(title.lower().split(), artist.lower().split(), album.lower().split(), genre.lower().split(), count)
     
-    def _run_query(self, title: list[str], artist: list[str], album: list[str], genre: list[str]) -> list:
+    def _run_query(self, title: list[str], artist: list[str], album: list[str], genre: list[str], count) -> list:
         '''
         Authors: Nathan Mette (main), Jeziel Banos Gonzales, Miro Vanek
         Args: 
@@ -226,6 +227,7 @@ class IRSystem:
             artist - A list of tokens inputted by the user corresponding to the artist information.
             album - A list of tokens inputted by the user corresponding to the album information.
             genre - A list of tokens inputted by the user corresponding to the genre information.
+            count - The number of relevant tracks to return.
 
         Purpose: Calculates the tf_idf weighting of every input the user provided and returns a list
                  of all documents related to the query sorted in descending order based on weight.
@@ -273,6 +275,7 @@ class IRSystem:
             track_relevance[track_id] = track_relevance.get(track_id, 0) + (0.0000005 * float(self.tracks[track_id][3])) 
 
             
+        '''
         results = []
         #searches for the top 10 track scores
         #Added by Miro Vanek
@@ -289,8 +292,11 @@ class IRSystem:
             #results[i] = self.tracks[results[i]][:3] Will use, but first test scores
             # Replace with above when finished. Below is just for testing.
             results[i] = (self.tracks[results[i][0]], self.tracks[results[i]][1], self.tracks[results[i]][2], track_relevance[results[i]])
-            
-        return results
+        '''
+
+        sorted_rel = sorted(track_relevance.items(), key=lambda x: x[1], reverse=True)
+        # results = [(track title, artist, album, tf_score), ...]
+        return [(self.tracks[id][0], self.tracks[id][1], self.tracks[id][2], score) for (id, score) in sorted_rel[:count]]
 
 
 

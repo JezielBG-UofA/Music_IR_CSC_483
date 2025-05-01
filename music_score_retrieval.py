@@ -42,9 +42,13 @@ class IRSystem:
 
 
         genre_tf = {}
+        self.genre_df = {}
+        self.normalized_genre_weights = {}
+
+
 
         self.tracks = {} #<-- Nathan Mette's do not touch : {track id: (title, artist name, album name, pop score)}
-        
+                            # Miro touched it : {track id: (title, artist name, album name, pop score, genres)}
         with open(file, "r", encoding="utf-8") as data_set:
             reader = csv.reader(data_set, quotechar="\"")
             row = 1
@@ -56,7 +60,7 @@ class IRSystem:
                 album_title = row[5]
 
                 # Add track to dict of all tracks
-                self.tracks[track_id] = (title, artist, album_title, row[18])
+                self.tracks[track_id] = (title, artist, album_title, row[18], genres)
 
                 # begin tf for title
                 title_tokens = title.lower().split()
@@ -91,10 +95,18 @@ class IRSystem:
                 
 
                 # genres
+                genre_tokens = genres.lower().strip("\"[").strip("]\"").split(",")
+                genre_tf[track_id] = {}
+                for term in genre_tokens:
+                    if term not in genre_tf[track_id]:
+                        genre_tf[track_id][term] = 1
+                    else:
+                        genre_tf[track_id][term] += 1
         
         self._calc_df_and_weights("title", title_tf)
         self._calc_df_and_weights("artist",artist_tf)
         self._calc_df_and_weights("album", album_tf)
+        self._calc_df_and_weights("genre", genre_tf)
 
     def _calc_df_and_weights(self, attribure_string, attribute_tf):
         '''
@@ -127,6 +139,10 @@ class IRSystem:
             case "title":
                 df = self.title_df
                 normalized_weights = self.normalized_title_weights
+            
+            case "genre":
+                df = self.genre_df
+                normalized_weights = self.normalized_genre_weights
             
         for track in attribute_tf:
 
@@ -228,11 +244,18 @@ class IRSystem:
         if len(album) != 0:
             album_tfidf = self._calc_ltn(album, self.albumn_df)
 
+
+        genre_tfidf = {}
+        if len(genre) != 0:
+            genre_tfidf = self._calc_ltn(genre, self.genre_df)
+
+
         # Add tf_idf weights together
         track_relevance = {}
-        title_importance = 3
-        artist_importance = 2
-        album_importance = 1
+        title_importance = 4
+        artist_importance = 3
+        album_importance = 2
+        genre_importance = 1
         for track_id in self.tracks.keys():
             for term in title_tfidf.keys():
                 track_relevance[track_id] = track_relevance.get(track_id, default=0) + title_importance * title_tfidf[term] * self.normalized_title_weights[track_id].get(term, default=0)
@@ -240,14 +263,16 @@ class IRSystem:
                 track_relevance[track_id] = track_relevance.get(track_id, default=0) + artist_importance * artist_tfidf[term] * self.normalized_artist_weights[track_id].get(term, default=0)
             for term in album_tfidf.keys():
                 track_relevance[track_id] = track_relevance.get(track_id, default=0) + album_importance * album_tfidf[term] * self.normalized_album_weights[track_id].get(term, default=0)
+            for term in genre_tfidf.keys():
+                track_relevance[track_id] = track_relevance.get(track_id, default=0) + genre_importance * genre_tfidf[term] * self.normalized_genre_weights[track_id].get(term, default=0)
+
 
             # added by Jeziel Banos Gonzalez (just adding popularity score for ties handling)
             track_relevance[track_id] = track_relevance.get(track_id, default=0) + (0.0000005 * self.tracks[track_id][3]) 
 
         # Find tracks that can be returned. Any that appear here should be returned before those not in the dictionary.
         possible = {}
-        if len(genre) != 0:
-            pass # dependent on how genre is stored
+
 
         results = []
 
@@ -265,7 +290,7 @@ def main(music_collection):
 
     while True:
         queryCheck = input("Please insert a music query. Press enter to continue, if you would like to exit, type \"exit\".")
-        if queryCheck.capitalize() == "EXIT":
+        if queryCheck.upper() == "EXIT":
             break
         title = input("Please provide a title. If no title is desired, simply press ENTER on your keyboard.")
         artist = input("Please provide an artist. If no specific artist is desired, simply press ENTER on your keyboard.")

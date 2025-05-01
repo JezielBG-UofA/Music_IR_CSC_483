@@ -246,7 +246,7 @@ class IRSystem:
         # Calc album tf_idf query weighting
         album_tfidf = {}
         if len(album) != 0:
-            album_tfidf = self._calc_ltn(album, self.albumn_df)
+            album_tfidf = self._calc_ltn(album, self.album_df)
 
         # Calc genre tf_idf query weighting
         genre_tfidf = {}

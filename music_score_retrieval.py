@@ -192,6 +192,8 @@ class IRSystem:
         
         retVal = {}
         for term in query_tf.keys():
+            if df.get(term, -1) == -1:
+                continue
             # Calc l of input.
             query_l = 1 + math.log10(query_tf[term])
             # Calc t of input.

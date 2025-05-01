@@ -54,6 +54,8 @@ class IRSystem:
             reader = csv.reader(data_set, quotechar="\"")
             row = 1
             for row in reader:
+                if not row[0].isnumeric():
+                    continue
                 title = row[19]
                 artist = row[10]
                 genres = row[16]
@@ -187,7 +189,7 @@ class IRSystem:
         # Calc tf of input.
         query_tf = {}
         for term in inputContent:
-            query_tf[term] = query_tf.get(term, default=0) + 1
+            query_tf[term] = query_tf.get(term, 0) + 1
         
         retVal = {}
         for term in query_tf.keys():
@@ -259,24 +261,37 @@ class IRSystem:
         genre_importance = 1
         for track_id in self.tracks.keys():
             for term in title_tfidf.keys():
-                track_relevance[track_id] = track_relevance.get(track_id, default=0) + title_importance * title_tfidf[term] * self.normalized_title_weights[track_id].get(term, default=0)
+                track_relevance[track_id] = track_relevance.get(track_id, 0) + title_importance * title_tfidf[term] * self.normalized_title_weights[track_id].get(term, 0)
             for term in artist_tfidf.keys():
-                track_relevance[track_id] = track_relevance.get(track_id, default=0) + artist_importance * artist_tfidf[term] * self.normalized_artist_weights[track_id].get(term, default=0)
+                track_relevance[track_id] = track_relevance.get(track_id, 0) + artist_importance * artist_tfidf[term] * self.normalized_artist_weights[track_id].get(term, 0)
             for term in album_tfidf.keys():
-                track_relevance[track_id] = track_relevance.get(track_id, default=0) + album_importance * album_tfidf[term] * self.normalized_album_weights[track_id].get(term, default=0)
+                track_relevance[track_id] = track_relevance.get(track_id, 0) + album_importance * album_tfidf[term] * self.normalized_album_weights[track_id].get(term, 0)
             for term in genre_tfidf.keys():
-                track_relevance[track_id] = track_relevance.get(track_id, default=0) + genre_importance * genre_tfidf[term] * self.normalized_genre_weights[track_id].get(term, default=0)
+                track_relevance[track_id] = track_relevance.get(track_id, 0) + genre_importance * genre_tfidf[term] * self.normalized_genre_weights[track_id].get(term, 0)
 
 
             # added by Jeziel Banos Gonzalez (just adding popularity score for ties handling)
-            track_relevance[track_id] = track_relevance.get(track_id, default=0) + (0.0000005 * self.tracks[track_id][3]) 
+            track_relevance[track_id] = track_relevance.get(track_id, 0) + (0.0000005 * float(self.tracks[track_id][3])) 
 
         # Find tracks that can be returned. Any that appear here should be returned before those not in the dictionary.
         possible = {}
 
-
+            
         results = []
-
+        #searches for the top 10 track scores
+        for i in range(10):
+            cur_max = None
+            for id in track_relevance:
+                if id not in results:
+                    if cur_max == None or track_relevance[id] > track_relevance[cur_max]:
+                        cur_max = id
+            results.append(cur_max)
+        
+        #converts each id to the track's title, artist, and album title
+        for i in range(len(results)):
+            results[i] = self.tracks[results[i]][:3]
+            
+        return results
 
 
 
@@ -295,9 +310,10 @@ def main(music_collection):
             break
         title = input("Please provide a title. If no title is desired, simply press ENTER on your keyboard.")
         artist = input("Please provide an artist. If no specific artist is desired, simply press ENTER on your keyboard.")
+        album = input("Please provide an album. If no specific album is desired, simply press ENTER on your keyboard.")
         genre = input("Please provide a desired genre. Else press ENTER on your keyboard")
 
-        print(ir.run_query(title, artist, genre))
+        print(ir.run_query(title, artist, album, genre))
 
 
 main("./fma_metadata/trackData.csv")

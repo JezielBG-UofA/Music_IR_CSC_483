@@ -135,7 +135,6 @@ class IRSystem:
                 df = self.album_df
                 normalized_weights = self.normalized_album_weights
 
-
             case "artist":
                 df = self.artist_df
                 normalized_weights = self.normalized_artist_weights
@@ -175,7 +174,6 @@ class IRSystem:
                 normalized_weights[track][term] = raw_weights[track][term] * cosine
             
 
-    # Calculates the ltn of the inputted content alongside the df of the provided set.
     def _calc_ltn(self, inputContent: list[str], df: dict[str, int]) -> dict[str, float]:
         '''
         Authors: Nathan Mette (main)
@@ -205,7 +203,7 @@ class IRSystem:
 
 
 
-    def run_query(self, title: str, artist: str, album: str, genre: str):
+    def run_query(self, title: str, artist: str, album: str, genre: str) -> list:
         '''
         Authors: Jeziel Banos Gonzalez (main)
         Args: 
@@ -219,7 +217,7 @@ class IRSystem:
         '''
         return self._run_query(title.lower().split(), artist.lower().split(), album.lower().split(), genre.lower().split())
     
-    def _run_query(self, title: list[str], artist: list[str], album: list[str], genre: list[str]):
+    def _run_query(self, title: list[str], artist: list[str], album: list[str], genre: list[str]) -> list:
         '''
         Authors: Nathan Mette (main), Jeziel Banos Gonzales, Miro Vanek
         Args: 
@@ -255,7 +253,7 @@ class IRSystem:
 
 
         # Add tf_idf weights together
-        track_relevance = {}
+        track_relevance : dict[str, float] = {}
         title_importance = 4
         artist_importance = 3
         album_importance = 2
@@ -274,15 +272,13 @@ class IRSystem:
             # added by Jeziel Banos Gonzalez (just adding popularity score for ties handling)
             track_relevance[track_id] = track_relevance.get(track_id, 0) + (0.0000005 * float(self.tracks[track_id][3])) 
 
-        # Find tracks that can be returned. Any that appear here should be returned before those not in the dictionary.
-        possible = {}
-
             
         results = []
         #searches for the top 10 track scores
+        #Added by Miro Vanek
         for i in range(10):
             cur_max = None
-            for id in track_relevance:
+            for id in track_relevance.keys():
                 if id not in results:
                     if cur_max == None or track_relevance[id] > track_relevance[cur_max]:
                         cur_max = id
@@ -290,7 +286,9 @@ class IRSystem:
         
         #converts each id to the track's title, artist, and album title
         for i in range(len(results)):
-            results[i] = self.tracks[results[i]][:3]
+            #results[i] = self.tracks[results[i]][:3] Will use, but first test scores
+            # Replace with above when finished. Below is just for testing.
+            results[i] = (self.tracks[results[i][0]], self.tracks[results[i]][1], self.tracks[results[i]][2], track_relevance[results[i]])
             
         return results
 

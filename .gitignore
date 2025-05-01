@@ -1,1 +1,3 @@
 fma_metadata/*
+.env/*
+.env

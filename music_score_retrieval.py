@@ -2,6 +2,7 @@
 Authors: 
     Jeziel Banos Gonzalez
     Nathan Mette
+    Miro Vanek
     []
     []
 
@@ -94,7 +95,7 @@ class IRSystem:
                         album_tf[track_id][term] += 1
                 
 
-                # genres
+                # begin tf for genres
                 genre_tokens = genres.lower().strip("\"[").strip("]\"").split(",")
                 genre_tf[track_id] = {}
                 for term in genre_tokens:
@@ -110,7 +111,7 @@ class IRSystem:
 
     def _calc_df_and_weights(self, attribure_string, attribute_tf):
         '''
-        Author: Jeziel Banos Gonzalez
+        Authors: Jeziel Banos Gonzalez & Miro Vanek
         Args:
             self - self
             attribute_string - a string describing what attribute of a track we
@@ -120,7 +121,7 @@ class IRSystem:
                             specified attribute
         
         Purpose: This method calculates the doc frequency and normalized weights for
-                 each term for a track's attribute [album title, track title, artist name]
+                 each term for a track's attribute [album title, track title, artist name, genre]
         '''
         df = None
         normalized_weights = None
@@ -217,7 +218,7 @@ class IRSystem:
     
     def _run_query(self, title: list[str], artist: list[str], album: list[str], genre: list[str]):
         '''
-        Authors: Nathan Mette (main), Jeziel Banos Gonzales
+        Authors: Nathan Mette (main), Jeziel Banos Gonzales, Miro Vanek
         Args: 
             self - self
             title - A list of tokens inputted by the user corresponding to the title information.
@@ -227,7 +228,7 @@ class IRSystem:
 
         Purpose: Calculates the tf_idf weighting of every input the user provided and returns a list
                  of all documents related to the query sorted in descending order based on weight.
-                 Title, Artist, and Album are all weighted calculations. Genre is a boolean calculation (assuming we keep this).
+                 Title, Artist, Album, and Genre are all weighted calculations.
         '''
         # Calc title_tfidf query weighting
         title_tfidf = {}
@@ -244,7 +245,7 @@ class IRSystem:
         if len(album) != 0:
             album_tfidf = self._calc_ltn(album, self.albumn_df)
 
-
+        # Calc genre tf_idf query weighting
         genre_tfidf = {}
         if len(genre) != 0:
             genre_tfidf = self._calc_ltn(genre, self.genre_df)

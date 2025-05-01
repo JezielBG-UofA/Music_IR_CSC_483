@@ -54,6 +54,7 @@ class IRSystem:
             reader = csv.reader(data_set, quotechar="\"")
             row = 1
             for row in reader:
+                #skips the first line of the csv
                 if not row[0].isnumeric():
                     continue
                 title = row[19]

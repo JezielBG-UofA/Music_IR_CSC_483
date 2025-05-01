@@ -241,7 +241,7 @@ class IRSystem:
         # Calc artist tf_idf query weighting
         artist_tfidf = {}
         if len(artist) != 0:
-            artist_tfidf = self._calc_ltn(artist, self.title_df)
+            artist_tfidf = self._calc_ltn(artist, self.artist_df)
 
         # Calc album tf_idf query weighting
         album_tfidf = {}
@@ -276,6 +276,7 @@ class IRSystem:
 
             
         '''
+        Nate and Jeziel: This is too inefficient, you are running through all tracks 10 times
         results = []
         #searches for the top 10 track scores
         #Added by Miro Vanek
@@ -296,7 +297,10 @@ class IRSystem:
 
         sorted_rel = sorted(track_relevance.items(), key=lambda x: x[1], reverse=True)
         # results = [(track title, artist, album, tf_score), ...]
-        return [(self.tracks[id][0], self.tracks[id][1], self.tracks[id][2], score) for (id, score) in sorted_rel[:count]]
+        top_ten= [(self.tracks[id][0], self.tracks[id][1], self.tracks[id][2], score) for (id, score) in sorted_rel[:count]]
+        for i in range(0,len(top_ten)):
+            print(f"{i+1}. {top_ten[i][0]} by artist {top_ten[i][1]} from album {top_ten[i][2]}. Score: {top_ten[i][3]}")
+
 
 
 
@@ -318,7 +322,7 @@ def main(music_collection):
         album = input("Please provide an album. If no specific album is desired, simply press ENTER on your keyboard.")
         genre = input("Please provide a desired genre. Else press ENTER on your keyboard")
 
-        print(ir.run_query(title, artist, album, genre))
+        ir.run_query(title, artist, album, genre)
 
 
 main("./fma_metadata/trackData.csv")

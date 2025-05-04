@@ -327,4 +327,4 @@ def main(music_collection):
         ir.run_query(title, artist, album, genre)
 
 
-main("./fma_metadata/trackData.csv")
+#main("./fma_metadata/trackData.csv")

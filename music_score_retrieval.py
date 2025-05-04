@@ -50,6 +50,20 @@ class IRSystem:
 
         self.tracks = {} #<-- Nathan Mette's do not touch : {track id: (title, artist name, album name, pop score)}
                             # Miro touched it : {track id: (title, artist name, album name, pop score, genres)}
+
+
+
+        genres_translation = {}
+        f = open("fma_metadata/genres.csv", "r", encoding="utf-8")
+        for line in f:
+            line = line.strip().split(",")
+            id = line[0].strip()
+            title = line[3].strip().lower()
+            genres_translation[id]=title
+        f.close()
+
+
+
         with open(file, "r", encoding="utf-8") as data_set:
             reader = csv.reader(data_set, quotechar="\"")
             row = 1
@@ -59,7 +73,7 @@ class IRSystem:
                     continue
                 title = row[19]
                 artist = row[10]
-                genres = row[16]
+                genres = row[15]
                 track_id = row[0]
                 album_title = row[5]
 
@@ -99,9 +113,17 @@ class IRSystem:
                 
 
                 # begin tf for genres
-                genre_tokens = genres.lower().strip("\"[").strip("]\"").split(",")
+                genre_ids = genres.strip("\"[").strip("]\"").split(",")
+                for i in range(len(genre_ids)):
+                    if genre_ids[i].strip() == "":
+                        genre_ids[i]= "NONE"
+                    else:
+                        genre_ids[i]= genres_translation[genre_ids[i].strip()]
+
+
+
                 genre_tf[track_id] = {}
-                for term in genre_tokens:
+                for term in genre_ids:
                     if term not in genre_tf[track_id]:
                         genre_tf[track_id][term] = 1
                     else:
@@ -319,10 +341,10 @@ def main(music_collection):
         queryCheck = input("Please insert a music query. Press enter to continue, if you would like to exit, type \"exit\".")
         if queryCheck.upper() == "EXIT":
             break
-        title = input("Please provide a title. If no title is desired, simply press ENTER on your keyboard.")
-        artist = input("Please provide an artist. If no specific artist is desired, simply press ENTER on your keyboard.")
-        album = input("Please provide an album. If no specific album is desired, simply press ENTER on your keyboard.")
-        genre = input("Please provide a desired genre. Else press ENTER on your keyboard")
+        title = input("Please provide a title. If no title is desired, simply press ENTER on your keyboard.\n")
+        artist = input("Please provide an artist. If no specific artist is desired, simply press ENTER on your keyboard.\n")
+        album = input("Please provide an album. If no specific album is desired, simply press ENTER on your keyboard.\n")
+        genre = input("Please provide a desired genre. Else press ENTER on your keyboard.\n")
 
         ir.run_query(title, artist, album, genre)
 

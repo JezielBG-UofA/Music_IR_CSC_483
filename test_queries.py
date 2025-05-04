@@ -30,12 +30,16 @@ def test_title():
 def test_no_hits():
     ir.run_query("","","","")
 
+def test_multiple():
+    ir.run_query("","","AWOL - A Way Of Life","Rock")
+
 
 def main():
     #test_genre()
     #test_album()
-    test_author()
+    #test_author()
     #test_title()
     #test_no_hits()
+    test_multiple()
 
 main()

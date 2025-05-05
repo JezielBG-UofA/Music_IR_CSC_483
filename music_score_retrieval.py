@@ -321,9 +321,7 @@ class IRSystem:
 
         sorted_rel = sorted(track_relevance.items(), key=lambda x: x[1], reverse=True)
         # results = [(track title, artist, album, tf_score), ...]
-        top_ten= [(self.tracks[id][0], self.tracks[id][1], self.tracks[id][2], score) for (id, score) in sorted_rel[:count]]
-        for i in range(0,len(top_ten)):
-            print(f"{i+1}. {top_ten[i][0]} by artist {top_ten[i][1]} from album {top_ten[i][2]}. Score: {top_ten[i][3]}")
+        return [(self.tracks[id][0], self.tracks[id][1], self.tracks[id][2], score) for (id, score) in sorted_rel[:count]]
 
 
 
@@ -346,7 +344,9 @@ def main(music_collection):
         album = input("Please provide an album. If no specific album is desired, simply press ENTER on your keyboard.\n")
         genre = input("Please provide a desired genre. Else press ENTER on your keyboard.\n")
 
-        ir.run_query(title, artist, album, genre)
+        top_ten = ir.run_query(title, artist, album, genre)
+        for i in range(0,len(top_ten)):
+            print(f"{i+1}. {top_ten[i][0]} by artist {top_ten[i][1]} from album {top_ten[i][2]}. Score: {top_ten[i][3]}")
 
 
 #main("./fma_metadata/trackData.csv")

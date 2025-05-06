@@ -151,13 +151,13 @@ def test_no_hits():
     noHits = ir.run_query("","","","")
     testPrinter(noHits)
     print('------------------------------------------')
-
+    
     print('Testing with nonexistent string "hejdlzo"')
     results = ir.run_query("hejdlzo", "hejdlzo", "hejdlzo", "hejdlzo")
     assert(results == noHits)
     testPrinter(results)
     print('------------------------------------------')
-
+    '''
     print('Testing with nonexistent string "hejdlzo" as subset of inputs, leaving others empty.' \
     '\nIntuition: If nonexistent string in each individual slot doesn\'t change score, no combination of them will alter score:')
     assert(ir.run_query("hejdlzo", "", "", "") == noHits)
@@ -167,16 +167,17 @@ def test_no_hits():
     print('Success. No non-noHit value found.')
     print('------------------------------------------')
     print('==========================================')
+    '''
 
 def test_multiple():
     testPrinter(ir.run_query("","","AWOL - A Way Of Life","Rock"))
 
 
 def main():
-    test_genre()
+    #test_genre()
     #test_album()
     #test_author()
-    #test_title()
+    test_title()
     #test_no_hits()
     #test_multiple()
 

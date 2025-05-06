@@ -26,7 +26,7 @@ def test_genre():
 
     print('Testing Genre \'Deep Funk\'. Only one Deep Funk song exists in database.')
     results = ir.run_query("", "", "", "Deep Funk")
-    #assert("San Fran Interlude (Edit)" in results)
+    assert("San Fran Interlude (Edit)" in results)
     testPrinter(results)
     print('------------------------------------------')
     print('==========================================')

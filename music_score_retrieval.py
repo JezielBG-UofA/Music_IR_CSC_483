@@ -46,6 +46,8 @@ class IRSystem:
         self.genre_df = {}
         self.normalized_genre_weights = {}
 
+        self.stopChars = ['-', ' ', ':', '.', '&', '(', ')', '/']
+
 
 
         self.tracks = {} #<-- Nathan Mette's do not touch : {track id: (title, artist name, album name, pop score)}
@@ -113,12 +115,23 @@ class IRSystem:
                 
 
                 # begin tf for genres
-                genre_ids = genres.strip("\"[").strip("]\"").split(",")
-                for i in range(len(genre_ids)):
-                    if genre_ids[i].strip() == "":
-                        genre_ids[i]= "NONE"
+                raw_genre_ids = genres.strip("\"[").strip("]\"").split(",")
+                genre_ids = []
+                for i in range(len(raw_genre_ids)):
+                    if raw_genre_ids[i].strip() == "":
+                        genre_ids.append('NONE')
                     else:
-                        genre_ids[i]= genres_translation[genre_ids[i].strip()]
+                        translation:str = genres_translation[raw_genre_ids[i].strip()]
+                        types = [translation]
+                        if '/' in translation:
+                            types = translation.split('/')
+                        elif '(' in translation:
+                            types = translation.replace(')', '').split('(')
+                        elif ' - ' in translation:
+                            types = translation.split(' - ')
+                        
+                        for genre in types:
+                            genre_ids.append(''.join([x.lower() if x not in self.stopChars else '' for x in genre]))
 
 
 
@@ -240,7 +253,8 @@ class IRSystem:
 
         Purpose: Normalizes user input and passes it to a helper function to determine query results.
         '''
-        return self._run_query(title.lower().split(), artist.lower().split(), album.lower().split(), genre.lower().split(), count)
+        genrePass = ''.join([x.lower() if x not in self.stopChars else '' for x in genre])
+        return self._run_query(title.lower().split(), artist.lower().split(), album.lower().split(), genrePass, count)
     
     def _run_query(self, title: list[str], artist: list[str], album: list[str], genre: list[str], count) -> list:
         '''
@@ -275,7 +289,7 @@ class IRSystem:
         # Calc genre tf_idf query weighting
         genre_tfidf = {}
         if len(genre) != 0:
-            genre_tfidf = self._calc_ltn(genre, self.genre_df)
+            genre_tfidf = self._calc_ltn([genre], self.genre_df)
 
 
         # Add tf_idf weights together

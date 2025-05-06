@@ -132,6 +132,11 @@ def test_author():
     print('------------------------------------------')
 
     # No query for partial name match "animals" as Rational Animals artist is more important in terms of scoring.
+    print('Partial name match "animals" (looking for artist \'Rational Animals\'):')
+    results = ir.run_query("", "animals", "", "")
+    testPrinter(results)
+    assert("rational animals" in [x[1].lower() for x in results])
+    print('------------------------------------------')
     print('==========================================')
     
 

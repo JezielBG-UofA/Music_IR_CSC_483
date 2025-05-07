@@ -111,6 +111,7 @@ def isValidRow(row):
     except:
         return False
 
+
 def normalizeCols(row):
     values = []
     for col in row:

@@ -12,6 +12,19 @@
 * setup.sh
 * test_queries.py
 
+
+### How to run:
+1. Clone the repo
+
+1. Install dependencies
+
+1. Run the bash script
+   ```
+   bash setup.sh
+   ```
+1. Run query.py
+
+
 ### makeCSV.py
 - This file is in charge of generating a new csv file called trackData.csv. This generated
   file is utilized by the music IR system to score the different music tracks. This file should
@@ -36,15 +49,3 @@
   A user is able to query by; track name, artist name, genre, album, or any combination of the previous query types. Output will be
   a string listing the top ten tracks that match the query in the following format:
   > this is temp, will update when we finish
-
-
-### How to run:
-1. Clone the repo
-
-1. Install dependencies
-
-1. Run the bash script
-   ```
-   bash setup.sh
-   ```
-1. Run query.py

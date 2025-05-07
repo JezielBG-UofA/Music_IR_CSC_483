@@ -1,7 +1,7 @@
 # Music_IR_CSC_483
-## Collaboratively built by: Jeziel Banos Gonzalez, Tony Zhang, Nathan James Mette, Miro E Vanek
+## Collaboratively built by: Jeziel Banos Gonzalez, Nathan James Mette, Miro E Vanek, Tony Zhang
 
-### Data Set Utilized: 
+### Data Set:
 - Original dataset is from the github link found here: https://github.com/mdeff/fma?tab=readme-ov-file 
 
 ## Files:

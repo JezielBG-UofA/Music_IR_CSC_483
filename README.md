@@ -13,7 +13,7 @@
 * test_queries.py
 
 
-### How to run:
+## How to run:
 1. Clone the repo
 
 1. Install dependencies
@@ -48,4 +48,8 @@
 - This file is meant to be ran by the user to query for music tracks. A user should only run this after setup.sh has been executed.
   A user is able to query by; track name, artist name, genre, album, or any combination of the previous query types. Output will be
   a string listing the top ten tracks that match the query in the following format:
-  > this is temp, will update when we finish
+  > The best match 
+  > Second best match
+  > Third ...
+  > ....
+  > Until the 10th best match

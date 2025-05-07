@@ -1,9 +1,16 @@
 # Music_IR_CSC_483
 ## Collaboratively built by: Jeziel Banos Gonzalez, Tony Zhang, Nathan James Mette, Miro E Vanek
 
-### Data Set Utilized: [] 
+### Data Set Utilized: 
+- Original dataset is from the github link found here: https://github.com/mdeff/fma?tab=readme-ov-file 
 
 ## Files:
+* makeCSV.py
+* music_score_retrieval.py
+* query.py
+* requirements.txt
+* setup.sh
+* test_queries.py
 
 ### makeCSV.py
 - This file is in charge of generating a new csv file called trackData.csv. This generated
@@ -30,3 +37,14 @@
   a string listing the top ten tracks that match the query in the following format:
   > this is temp, will update when we finish
 
+
+### How to run:
+1. Clone the repo
+
+1. Install dependencies
+
+1. Run the bash script
+   ```
+   bash setup.sh
+   ```
+1. Run query.py

@@ -48,7 +48,7 @@
 
 1. Install dependencies
 
-1. Run the bash script
+1. Run the bash script (In git bash)
    ```
    bash setup.sh
    ```
